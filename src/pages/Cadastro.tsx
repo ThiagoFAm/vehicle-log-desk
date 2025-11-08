@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, List, Home } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { vehicleService } from "@/services/vehicleService";
 import { toast } from "@/hooks/use-toast";
 
 const Cadastro = () => {
@@ -41,17 +41,14 @@ const Cadastro = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("vehicles").insert({
+      await vehicleService.createVehicle({
         owner_name: formData.ownerName,
         extension: formData.extension,
         department: formData.department,
         plate: formData.plate.toUpperCase(),
         model: formData.model,
         color: formData.color,
-        user_id: user?.id,
       });
-
-      if (error) throw error;
 
       toast({
         title: "Veículo cadastrado com sucesso",

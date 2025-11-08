@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Home, FileText, FileSpreadsheet, Edit, Trash2, Search } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { vehicleService } from "@/services/vehicleService";
 import { toast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -54,15 +54,9 @@ const Listagem = () => {
 
   const fetchVehicles = async () => {
     try {
-      const { data, error } = await supabase
-        .from("vehicles")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      setVehicles(data || []);
-      setFilteredVehicles(data || []);
+      const data = await vehicleService.getVehicles();
+  setVehicles((data || []) as any);
+  setFilteredVehicles((data || []) as any);
     } catch (error: any) {
       toast({
         title: "Erro ao carregar veículos",
@@ -76,12 +70,7 @@ const Listagem = () => {
 
   const handleDelete = async (vehicle: Vehicle) => {
     try {
-      const { error } = await supabase
-        .from("vehicles")
-        .delete()
-        .eq("id", vehicle.id);
-
-      if (error) throw error;
+      await vehicleService.deleteVehicle(vehicle.id as any);
 
       toast({
         title: "Cadastro excluído com sucesso",

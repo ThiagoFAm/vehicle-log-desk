@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { vehicleService } from "@/services/vehicleService";
 import { toast } from "@/hooks/use-toast";
 
 interface Vehicle {
@@ -54,19 +54,14 @@ export const EditVehicleDialog = ({ vehicle, open, onClose, onSuccess }: EditVeh
     setLoading(true);
 
     try {
-      const { error } = await supabase
-        .from("vehicles")
-        .update({
-          plate: formData.plate.toUpperCase(),
-          model: formData.model,
-          color: formData.color,
-          owner_name: formData.owner_name,
-          department: formData.department,
-          extension: formData.extension,
-        })
-        .eq("id", vehicle.id);
-
-      if (error) throw error;
+      await vehicleService.updateVehicle(vehicle.id as any, {
+        owner_name: formData.owner_name,
+        extension: formData.extension,
+        department: formData.department,
+        plate: formData.plate.toUpperCase(),
+        model: formData.model,
+        color: formData.color,
+      });
 
       toast({
         title: "Cadastro atualizado com sucesso",
